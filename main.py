@@ -28,8 +28,8 @@ all_sprites_list = pygame.sprite.Group()
 
 #Create the Paddle
 paddle = Paddle(screen, LIGHTBLUE, 100, 10)
-paddle.rect.center = (350,600)
-#paddle.rect.y = 500
+paddle.rect.x = 350
+paddle.rect.y = 599
 
 #Create the ball sprite
 ball = Ball(WHITE,10,10)
