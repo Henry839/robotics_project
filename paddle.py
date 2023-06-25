@@ -47,12 +47,22 @@ class Paddle(pygame.sprite.Sprite):
 #        self.parent.blit(rotated_image, rotated_rect)
         self.image = rotated_image
         self.rect = rotated_rect
-
-
-        
-
     def moveRight(self, pixels):
-        self.rect.x += pixels
-        #Check that you are not going too far (off the screen)
-        if self.rect.x > 700:
-            self.rect.x = 700
+        self.angle -= 5
+        if self.angle < 0:
+            self.angle = 0
+        ori_x, ori_y = self.ini_rect.x, self.ini_rect.y + self.height * 0.5
+        angle = self.angle
+        
+        sin_a, cos_a = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        center = (ori_x + self.width * 0.5 * cos_a, ori_y - self.width * 0.5 * sin_a)
+
+        rotated_image = pygame.transform.rotate(self.ini_image, self.angle)
+        rotated_rect = rotated_image.get_rect(center = center)
+#        self.parent.blit(rotated_image, rotated_rect)
+        self.image = rotated_image
+        self.rect = rotated_rect
+
+
+   
+
