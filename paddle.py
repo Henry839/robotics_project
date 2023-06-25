@@ -13,6 +13,7 @@ class Paddle(pygame.sprite.Sprite):
         # Set the background color and set it to be transparent
         self.color = color
         self.parent = parent
+        self.child = None
         self.image = pygame.Surface([width, height])
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
@@ -29,6 +30,58 @@ class Paddle(pygame.sprite.Sprite):
         self.ini_rect = self.rect
         self.angle = 0
 
+
+    def rotate_1(self, delta):
+        self.angle += delta
+        if self.angle > 180:
+            self.angle = 180
+        if self.angle < 0:
+            self.angle = 0
+        
+        ori_x, ori_y = self.ini_rect.x, self.ini_rect.y + self.height * 0.5
+        angle = self.angle
+        sin_a, cos_a = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        center = (ori_x + self.width * 0.5 * cos_a, ori_y - self.width * 0.5 * sin_a)
+        rotated_image = pygame.transform.rotate(self.ini_image, self.angle)
+        rotated_rect = rotated_image.get_rect(center = center)
+        self.image = rotated_image
+        self.rect = rotated_rect
+        a2 = self.child
+        pad = a2.child
+        a2_x = center[0]+ self.width * 0.5 * cos_a + a2.width * 0.5 * math.cos(math.radians(a2.angle))
+        a2_y = center[1] - self.width * 0.5 * sin_a - a2.width * 0.5 * math.sin(math.radians(a2.angle))
+        a2_center = (a2_x, a2_y)
+        a2.rect = a2.image.get_rect(center = a2_center)
+        pad_x = a2_center[0] + a2.width * 0.5 * math.cos(math.radians(a2.angle))
+        pad_y = a2_center[1] - a2.width * 0.5 * math.sin(math.radians(a2.angle))
+        pad_center = (pad_x, pad_y)
+        pad.rect = pad.image.get_rect(center = pad_center)
+
+
+    def rotate_2(self, delta):
+
+        self.angle += delta
+        if self.angle > 180:
+            self.angle = 180
+        if self.angle < 0:
+            self.angle = 0
+        
+        a1 = self.parent
+        ori_x = a1.ini_rect.x + a1.width * math.cos(math.radians(a1.angle))
+        ori_y = a1.ini_rect.y + self.height * 0.5 - a1.width * math.sin(math.radians(a1.angle))
+        angle = self.angle
+        sin_a, cos_a = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        center = (ori_x + self.width * 0.5 * cos_a, ori_y - self.width * 0.5 * sin_a)
+        rotated_image = pygame.transform.rotate(self.ini_image, self.angle)
+        rotated_rect = rotated_image.get_rect(center = center)
+        self.image = rotated_image
+        self.rect = rotated_rect
+        pad = self.child
+        pad_x = center[0] + self.width * 0.5 * math.cos(math.radians(self.angle))
+        pad_y = center[1] - self.width * 0.5 * math.sin(math.radians(self.angle))
+        pad_center = (pad_x, pad_y)
+        pad.rect = pad.image.get_rect(center = pad_center)
+        
 
 
     def moveLeft(self, pixels):

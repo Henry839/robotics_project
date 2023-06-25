@@ -14,6 +14,7 @@ LIGHTBLUE = (0,176,240)
 RED = (255,0,0)
 ORANGE = (255,100,0)
 YELLOW = (255,255,0)
+GREY = (220, 220, 220)
 
 score = 0
 lives = 3
@@ -26,10 +27,21 @@ pygame.display.set_caption("Breakout Game")
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
 
+arm1 = Paddle(None, GREY, 200, 6)
+arm1.rect.x = 400
+arm1.rect.y = 560
+arm2 = Paddle(arm1, GREY, 160, 6)
+arm2.rect.x = 400+200
+arm2.rect.y = 560
+
+
 #Create the Paddle
-paddle = Paddle(screen, LIGHTBLUE, 100, 10)
-paddle.rect.x = 350
-paddle.rect.y = 599
+paddle = Paddle(arm2, LIGHTBLUE, 100, 10)
+paddle.rect.x = 200
+paddle.rect.y = 560
+
+arm1.child = arm2
+arm2.child = paddle
 
 #Create the ball sprite
 ball = Ball(WHITE,10,10)
@@ -59,6 +71,8 @@ for i in range(7):
 # Add the paddle and the ball to the list of sprites
 all_sprites_list.add(paddle)
 all_sprites_list.add(ball)
+all_sprites_list.add(arm1)
+all_sprites_list.add(arm2)
 
 # The loop will carry on until the user exits the game (e.g. clicks the close button).
 carryOn = True
@@ -76,9 +90,13 @@ while carryOn:
     #Moving the paddle when the use uses the arrow keys
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        paddle.moveLeft(5)
+        arm1.rotate_1(5)
     if keys[pygame.K_RIGHT]:
-        paddle.moveRight(5)
+        arm1.rotate_1(-5)
+    if keys[pygame.K_UP]:
+        arm2.rotate_2(5)
+    if keys[pygame.K_DOWN]:
+        arm2.rotate_2(-5)
 
     # --- Game logic should go here
     all_sprites_list.update()
