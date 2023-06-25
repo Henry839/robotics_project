@@ -16,8 +16,6 @@ class Paddle(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
-        self.width = width
-        self.height = height
  #       self.parent.blit(self.image, (0,0))
 
         # Draw the paddle (a rectangle!)
@@ -25,12 +23,15 @@ class Paddle(pygame.sprite.Sprite):
 
         # Fetch the rectangle object that has the dimensions of the image.
         self.rect = self.image.get_rect()
+        self.ini_image = self.image
+        self.angle = 0
 
 
     def moveLeft(self, pixels):
-        rotated_image = pygame.transform.rotate(self.image, 5)
-        rotated_rect = rotated_image.get_rect(center = (350, 560))
-        #self.parent.blit(rotated_image, rotated_rect)
+        self.angle -= 5
+        rotated_image = pygame.transform.rotate(self.ini_image, self.angle)
+        rotated_rect = rotated_image.get_rect(center = self.rect.center)
+#        self.parent.blit(rotated_image, rotated_rect)
         self.image = rotated_image
         self.rect = rotated_rect
 
