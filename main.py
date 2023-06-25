@@ -27,7 +27,7 @@ pygame.display.set_caption("Breakout Game")
 all_sprites_list = pygame.sprite.Group()
 
 #Create the Paddle
-paddle = Paddle(LIGHTBLUE, 100, 10)
+paddle = Paddle(screen, LIGHTBLUE, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
 
