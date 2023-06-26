@@ -4,6 +4,8 @@ import pygame
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
+from arm_control.place_prediction import place_predicter
+from arm_control.control import arm_controller
 
 pygame.init()
 
@@ -34,18 +36,23 @@ arm2 = Paddle(arm1, GREY, 160, 6)
 arm2.rect.x = 400+200
 arm2.rect.y = 760
 
+# trajectory predicter
+predicter = place_predicter(200,160,400,760)
+# arm controller
+controller = arm_controller(200,1600,400,760)
+
 
 #Create the Paddle
 paddle = Paddle(arm2, LIGHTBLUE, 100, 10)
-paddle.rect.x = 200
-paddle.rect.y = 560
+paddle.rect.x = 600
+paddle.rect.y = 760
 
 arm1.child = arm2
 arm2.child = paddle
 
 #Create the ball sprite
 ball = Ball(WHITE,10,10)
-ball.rect.x = 345
+ball.rect.x = 300
 ball.rect.y = 195
 
 all_bricks = pygame.sprite.Group()
@@ -79,7 +86,11 @@ carryOn = True
 
 # The clock will be used to control how fast the screen updates
 clock = pygame.time.Clock()
+time = 0
+flag = 0
+count = 0
 
+delta_angle = 1
 # -------- Main Program Loop -----------
 while carryOn:
     # --- Main event loop
@@ -88,25 +99,61 @@ while carryOn:
               carryOn = False # Flag that we are done so we exit this loop
 
     #Moving the paddle when the use uses the arrow keys
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        arm1.rotate_1(5)
-    if keys[pygame.K_RIGHT]:
-        arm1.rotate_1(-5)
-    if keys[pygame.K_UP]:
-        arm2.rotate_2(5)
-    if keys[pygame.K_DOWN]:
-        arm2.rotate_2(-5)
+#    if flag == 0:
+        # predict the trajectory from the beginning
+
+    next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
+    alpha = controller.trivial_inverse_kinematics(next_x, next_y)
+    time += clock.get_time()
+    if flag == 1:
+        time = 0
+        flag = 0
+
+
+
+
+    
+    if alpha - arm1.angle > delta_angle and time > 160:
+        K_LEFT = True
+        K_RIGHT = False
+
+    elif arm1.angle - alpha > delta_angle and time > 160:
+        K_RIGHT = True
+        K_LEFT = False
+    else:
+        K_RIGHT = False 
+        K_LEFT = False
+
+    if alpha - arm2.angle > delta_angle and time > 160:
+        K_UP = True
+        K_DOWN = False
+
+    elif arm2.angle - alpha > delta_angle and time > 160:
+        K_DOWN = True
+        K_UP = False
+    else:
+        K_DOWN = False 
+        K_UP = False
+
+    if K_LEFT:
+        arm1.rotate_1(delta_angle)
+    if K_RIGHT:
+        arm1.rotate_1(-delta_angle)
+    if K_UP:
+        arm2.rotate_2(delta_angle)
+    if K_DOWN:
+        arm2.rotate_2(-delta_angle)
 
     # --- Game logic should go here
-    all_sprites_list.update()
 
+    all_sprites_list.update()
+    
     #Check if the ball is bouncing against any of the 4 walls:
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
         ball.velocity[0] = -ball.velocity[0]
-    if ball.rect.y>590:
+    if ball.rect.y>790:
         ball.velocity[1] = -ball.velocity[1]
         lives -= 1
         if lives == 0:
@@ -125,9 +172,17 @@ while carryOn:
 
     #Detect collisions between the ball and the paddles
     if pygame.sprite.collide_mask(ball, paddle):
-      ball.rect.x -= ball.velocity[0]
-      ball.rect.y -= ball.velocity[1]
-      ball.bounce()
+        
+        ball.rect.x -= ball.velocity[0]
+        ball.rect.y -= ball.velocity[1]
+        ball.bounce()
+        flag = 1
+        #print("initial velocity ", ball.velocity)
+      # predict where the ball's trajectory
+#        next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
+        #print("initial velocity2 ", ball.velocity)
+#        alpha = controller.trivial_inverse_kinematics(next_x, next_y)
+
 
     #Check if there is the ball collides with any of bricks
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)

@@ -31,6 +31,11 @@ class arm_controller():
 
 
         return alpha1, alpha2
+    def trivial_inverse_kinematics(self, x_paddle, y_paddle):
+        length = sqrt(pow(x_paddle - self.x_origin,2) + pow(y_paddle - self.y_origin,2))
+        alpha = acos((x_paddle - self.x_origin)/length)
+        alpha = math.degrees(alpha)
+        return alpha
         
 
         
