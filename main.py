@@ -20,7 +20,7 @@ score = 0
 lives = 3
 
 # Open a new window
-size = (800, 600)
+size = (800, 800)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Breakout Game")
 
@@ -29,10 +29,10 @@ all_sprites_list = pygame.sprite.Group()
 
 arm1 = Paddle(None, GREY, 200, 6)
 arm1.rect.x = 400
-arm1.rect.y = 560
+arm1.rect.y = 760
 arm2 = Paddle(arm1, GREY, 160, 6)
 arm2.rect.x = 400+200
-arm2.rect.y = 560
+arm2.rect.y = 760
 
 
 #Create the Paddle
