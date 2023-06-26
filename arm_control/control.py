@@ -1,5 +1,5 @@
 import math
-from math import sqrt, asin, acos, atan2, sin, cos
+from math import sqrt, asin, acos, atan2, sin, cos 
 class arm_controller():
     def __init__(self, arm1_length, arm2_length, x_origin, y_origin):
 
@@ -20,7 +20,8 @@ class arm_controller():
         length = sqrt(x**2 + y**2)
         l1 = self.l1
         l2 = self.l2
-        if l1 + l2 == length:
+        epsilon = 1e-3
+        if abs(l1 + l2 - length) < epsilon:
             f = 0
         else:
             f = acos((x**2 + y**2 - l1**2 -l2**2) / 2*l1*l2)
