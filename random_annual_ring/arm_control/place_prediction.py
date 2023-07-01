@@ -37,9 +37,9 @@ class place_predicter():
         bound_length = self.l1 + self.l2
         min_length = abs(self.l1 - self.l2)
         count = 0
-        print("-"* 20)
+#        print("-"* 20)
         while(True):
-            print(f"ball trajectory : {ball.rect.x}, {ball.rect.y}")
+#            print(f"ball trajectory : {ball.rect.x}, {ball.rect.y}")
 
 
             new_all_sprites_list.update()
@@ -51,7 +51,7 @@ class place_predicter():
             if ball.rect.y>790:
 #                ball.velocity[1] = -ball.velocity[1]
                 break
-            if ball.rect.y<40:
+            if ball.rect.y<42:
                 ball.velocity[1] = -ball.velocity[1]
 
             #Detect collisions between the ball and the paddles
@@ -66,7 +66,7 @@ class place_predicter():
             # the ball will reach here, try to hit the ball
 
             ball_origin_length = sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2)
-            if(ball_origin_length <= bound_length and ball.velocity[1] > 0 and ball_origin_length >= min_length):
+            if(ball_origin_length <= bound_length and ball.velocity[1] >= 0 and ball_origin_length >= min_length and ball.rect.y <= 800):
                 # hit the ball
                 ball0_x = ball.rect.x
                 ball0_y = ball.rect.y
@@ -80,7 +80,7 @@ class place_predicter():
                 flag = 1
                 score = 0
                 while(True):
-                    if(sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) < self.l1 + self.l2 and ball.velocity[1] > 0 and sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) > min_length):
+                    if(sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) <= self.l1 + self.l2 and ball.velocity[1] > 0 and sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) >= min_length):
                         break
                     new_all_sprites_list.update()
                     if ball.rect.x>=790:
@@ -117,7 +117,7 @@ class place_predicter():
                     all_bricks.add(dead_brick)
                     new_all_sprites_list.add(dead_brick)
                     all_sprite_list.add(dead_brick)
-                bound_length -= 2
+                bound_length -= 0.5
                 if(bound_length <= min_length):
                     break
         max_i = score_list.index(max(score_list))

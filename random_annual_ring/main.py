@@ -90,8 +90,9 @@ time = 0
 flag = 2
 count = 0
 
-delta_angle = 2
+delta_angle = 3
 # -------- Main Program Loop -----------
+out_flag = 0
 while carryOn:
     # --- Main event loop
     for event in pygame.event.get(): # User did something
@@ -108,23 +109,26 @@ while carryOn:
     if flag == 1:
         time = 0
         flag = 0
+        out_flag = 0
         next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
         alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y + 10)
         
     if flag == 2:
         flag = 0
-        time = 501
+        time = 801
         next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
         alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y + 10)
 
     ball_origin_length = sqrt((ball.rect.x - controller.x_origin)**2  + (ball.rect.y - controller.y_origin)**2)
+    if ball_origin_length > 400:
+        out_flag = 1
 
     
-    if alpha1 - arm1.angle > delta_angle  and time > 500:
+    if alpha1 - arm1.angle > delta_angle  and out_flag == 1:
         K_LEFT = True
         K_RIGHT = False
 
-    elif arm1.angle - alpha1 > delta_angle  and time > 500:
+    elif arm1.angle - alpha1 > delta_angle  and out_flag == 1:
         K_RIGHT = True
         K_LEFT = False
     else:
@@ -132,11 +136,11 @@ while carryOn:
         K_RIGHT = False 
         K_LEFT = False
 
-    if alpha2 - arm2.angle > delta_angle  and time > 500:
+    if alpha2 - arm2.angle > delta_angle  and out_flag == 1:
         K_UP = True
         K_DOWN = False
 
-    elif arm2.angle - alpha2 > delta_angle  and time > 500:
+    elif arm2.angle - alpha2 > delta_angle  and out_flag == 1:
         K_DOWN = True
         K_UP = False
     else:
@@ -166,12 +170,6 @@ while carryOn:
         flag = 2
         ball.velocity[1] = -ball.velocity[1]
         lives -= 1
-        print("*" * 20)
-        print(next_x, next_y)
-        print(alpha1, alpha2)
-        print(ball.rect.x, ball.rect.y)
-        print(paddle.rect.x, paddle.rect.y)
-
         if lives == 0:
             #Display Game Over Message for 3 seconds
             font = pygame.font.Font(None, 74)
@@ -183,7 +181,7 @@ while carryOn:
             #Stop the Game
             carryOn=False
 
-    if ball.rect.y<40:
+    if ball.rect.y<42:
         flag = 2
         ball.velocity[1] = -ball.velocity[1]
 

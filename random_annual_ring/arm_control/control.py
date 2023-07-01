@@ -17,7 +17,7 @@ class arm_controller():
         # calculate the angle
         x = x_paddle - self.x_origin
         y = -(y_paddle - self.y_origin)
-        print(x,y)
+#        print(x,y)
         length = sqrt(x**2 + y**2)
         l1 = self.l1
         l2 = self.l2
@@ -28,8 +28,13 @@ class arm_controller():
         elif(psi > 1):
             psi = 1
         alpha2 = acos(psi)
+        psi2 = (x**2 + y**2 + l1**2 - l2**2)/(2 * sqrt(x**2 + y**2) * l1)
+        if(psi2 < -1):
+            psi2 = -1
+        elif(psi2 > 1):
+            psi2 = 1
 
-        gamma = acos((x**2 + y**2 + l1**2 - l2**2)/(2 * sqrt(x**2 + y**2) * l1))
+        gamma = acos(psi2)
         
 
         beta = atan2(y,x)
