@@ -99,7 +99,12 @@ while carryOn:
               carryOn = False # Flag that we are done so we exit this loop
 
     #Moving the paddle when the use uses the arrow keys
-    
+    keys = pygame.key.get_pressed()
+    K_LEFT = keys[pygame.K_LEFT]
+    K_RIGHT = keys[pygame.K_RIGHT]
+    K_UP = keys[pygame.K_UP]
+    K_DOWN = keys[pygame.K_DOWN]
+
 
     if K_LEFT:
         arm1.rotate_1(delta_angle)
