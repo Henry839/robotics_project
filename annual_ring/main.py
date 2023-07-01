@@ -87,7 +87,7 @@ carryOn = True
 # The clock will be used to control how fast the screen updates
 clock = pygame.time.Clock()
 time = 0
-flag = 0
+flag = 1
 count = 0
 
 delta_angle = 1
@@ -102,12 +102,14 @@ while carryOn:
 #    if flag == 0:
         # predict the trajectory from the beginning
 
-    next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
-    alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y)
     time += clock.get_time()
     if flag == 1:
         time = 0
         flag = 0
+        next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
+        alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y)
+
+
 
 
 

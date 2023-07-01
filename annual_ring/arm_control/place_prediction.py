@@ -112,7 +112,7 @@ class place_predicter():
                 for dead_brick in simulate_dead_brick_list:
                     all_bricks.add(dead_brick)
                     all_sprite_list.add(dead_brick)
-                bound_length -= 5
+                bound_length -= 1
         max_i = score_list.index(max(score_list))
 
         final_x = available_paddle_x[max_i]
