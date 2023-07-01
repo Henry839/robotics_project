@@ -20,35 +20,34 @@ class place_predicter():
         initial_y = ball.rect.y
         initial_velocity_x = ball.velocity[0]
         initial_velocity_y = ball.velocity[1]
-        #print(type(ball.velocity))
-        #print("initial_velocity",ball.velocity)
+        available_paddle_x = []
+        available_paddle_y = []
+        score_list = []
         new_all_bricks = all_bricks.copy()
 
         new_all_sprites_list = pygame.sprite.Group()
         new_all_sprites_list.add(ball)
         new_all_sprites_list.add(new_all_bricks)
         count = 0;
-        epsilon = 5
+        epsilon = 10
         dead_brick_list = pygame.sprite.Group()
-
-        while(abs(sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) - (self.l1 + self.l2)) > epsilon or ball.velocity[1] < 0):
-            # when not reaching the circle
-#            print(f"error : {sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) - (self.l1 + self.l2)}")
-#            print(f"velocity : {ball.velocity[1]}")
-
+        simulate_dead_brick_list = pygame.sprite.Group()
+        ball_origin_length = 0;
+        bound_length = self.l1 + self.l2
+        count = 0
+        while(True):
             if(count > 1000):
                 print("TOO LONG")
                 break
             new_all_sprites_list.update()
             count += 1
-#            print(f"count : {count}")
-#            print(f" x  : {ball.rect.x}, y : {ball.rect.y}")
             if ball.rect.x>=790:
                 ball.velocity[0] = -ball.velocity[0]
             if ball.rect.x<=0:
                 ball.velocity[0] = -ball.velocity[0]
             if ball.rect.y>790:
                 ball.velocity[1] = -ball.velocity[1]
+                break
             if ball.rect.y<40:
                 ball.velocity[1] = -ball.velocity[1]
 
@@ -61,9 +60,63 @@ class place_predicter():
                 ball.bounce()
                 brick.kill()
                 dead_brick_list.add(brick)
+            # the ball will reach here, try to hit the ball
+            ball_origin_length = sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2)
+            if(ball_origin_length < bound_length and ball.velocity[1] > 0):
+                # hit the ball
+                ball0_x = ball.rect.x
+                ball0_y = ball.rect.y
+                ball0_vx = ball.velocity[0]
+                ball0_vy = ball.velocity[1]
+                simulate_dead_brick_list.empty()
 
-        final_x = ball.rect.x
-        final_y = ball.rect.y
+
+                ball.rect.x -= ball.velocity[0]
+                ball.rect.y -= ball.velocity[1]
+                ball.bounce()
+                flag = 1
+                score = 0
+                while(ball_origin_length > self.l1 + self.l2 or ball.velocity[1] < 0):
+                    ball_origin_length = sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2)
+                    new_all_sprites_list.update()
+                    if ball.rect.x>=790:
+                        ball.velocity[0] = -ball.velocity[0]
+                    if ball.rect.x<=0:
+                        ball.velocity[0] = -ball.velocity[0]
+                    if ball.rect.y>790:
+                        ball.velocity[1] = -ball.velocity[1]
+                        flag = 0 # hit the bottom
+                        break
+                    if ball.rect.y<40:
+                        ball.velocity[1] = -ball.velocity[1]
+
+                    #Detect collisions between the ball and the paddles
+                    #Check if there is the ball collides with any of bricks
+
+                    brick_collision_list = pygame.sprite.spritecollide(ball,new_all_bricks,False)
+
+                    for brick in brick_collision_list:
+                        ball.bounce()
+                        score += 1
+                        brick.kill()
+                        simulate_dead_brick_list.add(brick)
+                if(flag == 1):
+                    available_paddle_x.append(ball0_x)
+                    available_paddle_y.append(ball0_y)
+                    score_list.append(score)
+                #initialize for this hit
+                ball.rect.x = ball0_x
+                ball.rect.y = ball0_y
+                ball.velocity[0] = ball0_vx
+                ball.velocity[1] = ball0_vy
+                for dead_brick in simulate_dead_brick_list:
+                    all_bricks.add(dead_brick)
+                    all_sprite_list.add(dead_brick)
+                bound_length -= 5
+        max_i = score_list.index(max(score_list))
+
+        final_x = available_paddle_x[max_i]
+        final_y = available_paddle_y[max_i]
         ball.rect.x = initial_x
         ball.rect.y = initial_y
         ball.velocity[0] = initial_velocity_x

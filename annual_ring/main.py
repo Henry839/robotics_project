@@ -39,7 +39,7 @@ arm2.rect.y = 760
 # trajectory predicter
 predicter = place_predicter(200,160,400,760)
 # arm controller
-controller = arm_controller(200,1600,400,760)
+controller = arm_controller(200,160,400,760)
 
 
 #Create the Paddle
@@ -103,7 +103,7 @@ while carryOn:
         # predict the trajectory from the beginning
 
     next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
-    alpha = controller.trivial_inverse_kinematics(next_x, next_y)
+    alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y)
     time += clock.get_time()
     if flag == 1:
         time = 0
@@ -113,22 +113,22 @@ while carryOn:
 
 
     
-    if alpha - arm1.angle > delta_angle and time > 160:
+    if alpha1 - arm1.angle > delta_angle and time > 160:
         K_LEFT = True
         K_RIGHT = False
 
-    elif arm1.angle - alpha > delta_angle and time > 160:
+    elif arm1.angle - alpha1 > delta_angle and time > 160:
         K_RIGHT = True
         K_LEFT = False
     else:
         K_RIGHT = False 
         K_LEFT = False
 
-    if alpha - arm2.angle > delta_angle and time > 160:
+    if alpha2 - arm2.angle > delta_angle and time > 160:
         K_UP = True
         K_DOWN = False
 
-    elif arm2.angle - alpha > delta_angle and time > 160:
+    elif arm2.angle - alpha2 > delta_angle and time > 160:
         K_DOWN = True
         K_UP = False
     else:
