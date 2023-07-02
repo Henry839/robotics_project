@@ -3,7 +3,7 @@ This is our repo for robotics project: atari breakout
 
 ---
 # Demo demonstration (四个视频：大概90s能够看完）
-* **随机情形下的年轮解法**
+* **随机情形下的年轮解法** *(其中有个非常精彩的海底捞月，注意不要被视频进度条挡着了)*
   
 https://github.com/Henry839/robotics_project/assets/78572186/d0144967-32e1-4102-bd4c-c5bab15c2c81
 
