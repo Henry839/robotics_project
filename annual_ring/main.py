@@ -1,12 +1,11 @@
 #Import the pygame library and initialise the game engine
-import pygame
-#Let's import the Paddle Class & the Ball Class
+import pygame #Let's import the Paddle Class & the Ball Class
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
 from arm_control.place_prediction import place_predicter
 from arm_control.control import arm_controller
-
+from math import sqrt
 pygame.init()
 
 # Define some colors
@@ -32,14 +31,15 @@ all_sprites_list = pygame.sprite.Group()
 arm1 = Paddle(None, GREY, 200, 6)
 arm1.rect.x = 400
 arm1.rect.y = 760
+
 arm2 = Paddle(arm1, GREY, 160, 6)
 arm2.rect.x = 400+200
 arm2.rect.y = 760
 
 # trajectory predicter
-predicter = place_predicter(200,160,400,760)
+predicter = place_predicter(200,160,400,763)
 # arm controller
-controller = arm_controller(200,160,400,760)
+controller = arm_controller(200,160,400,763)
 
 
 #Create the Paddle
@@ -87,11 +87,12 @@ carryOn = True
 # The clock will be used to control how fast the screen updates
 clock = pygame.time.Clock()
 time = 0
-flag = 1
+flag = 2
 count = 0
 
-delta_angle = 1
+delta_angle = 4
 # -------- Main Program Loop -----------
+out_flag = 0
 while carryOn:
     # --- Main event loop
     for event in pygame.event.get(): # User did something
@@ -103,34 +104,43 @@ while carryOn:
         # predict the trajectory from the beginning
 
     time += clock.get_time()
+
+    all_sprites_list.update()
     if flag == 1:
         time = 0
         flag = 0
+        out_flag = 0
         next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
-        alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y)
+        alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y + 10)
+        
+    if flag == 2:
+        flag = 0
+        time = 801
+        next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
+        alpha1,alpha2 = controller.inverse_kinematics(next_x, next_y + 10)
 
-
-
-
-
+    ball_origin_length = sqrt((ball.rect.x - controller.x_origin)**2  + (ball.rect.y - controller.y_origin)**2)
+    if ball_origin_length > 400:
+        out_flag = 1
 
     
-    if alpha1 - arm1.angle > delta_angle and time > 160:
+    if alpha1 - arm1.angle > delta_angle  and out_flag == 1:
         K_LEFT = True
         K_RIGHT = False
 
-    elif arm1.angle - alpha1 > delta_angle and time > 160:
+    elif arm1.angle - alpha1 > delta_angle  and out_flag == 1:
         K_RIGHT = True
         K_LEFT = False
     else:
+
         K_RIGHT = False 
         K_LEFT = False
 
-    if alpha2 - arm2.angle > delta_angle and time > 160:
+    if alpha2 - arm2.angle > delta_angle  and out_flag == 1:
         K_UP = True
         K_DOWN = False
 
-    elif arm2.angle - alpha2 > delta_angle and time > 160:
+    elif arm2.angle - alpha2 > delta_angle  and out_flag == 1:
         K_DOWN = True
         K_UP = False
     else:
@@ -148,58 +158,66 @@ while carryOn:
 
     # --- Game logic should go here
 
-    all_sprites_list.update()
     
     #Check if the ball is bouncing against any of the 4 walls:
-    if ball.rect.x>=790:
+    if ball.rect.x >=785 and ball.rect.y < 42:
         ball.velocity[0] = -ball.velocity[0]
-    if ball.rect.x<=0:
+        ball.velocity[1] = -ball.velocity[1]
+    elif ball.rect.x <=5 and ball.rect.y < 42:
         ball.velocity[0] = -ball.velocity[0]
-    if ball.rect.y>790:
         ball.velocity[1] = -ball.velocity[1]
-        lives -= 1
-        if lives == 0:
-            #Display Game Over Message for 3 seconds
-            font = pygame.font.Font(None, 74)
-            text = font.render("GAME OVER", 1, WHITE)
-            screen.blit(text, (250,300))
-            pygame.display.flip()
-            pygame.time.wait(3000)
+    else:
+        if ball.rect.x>=785:
+#            flag = 2
+            ball.velocity[0] = -ball.velocity[0]
+        if ball.rect.x<=5:
+#            flag = 2
+            ball.velocity[0] = -ball.velocity[0]
+        if ball.rect.y>790:
+#            flag = 2
+            ball.velocity[1] = -ball.velocity[1]
+            lives -= 1
+            if lives == 0:
+                #Display Game Over Message for 3 seconds
+                font = pygame.font.Font(None, 74)
+                text = font.render("GAME OVER", 1, WHITE)
+                screen.blit(text, (250,300))
+                pygame.display.flip()
+                pygame.time.wait(3000)
 
-            #Stop the Game
-            carryOn=False
-
-    if ball.rect.y<40:
-        ball.velocity[1] = -ball.velocity[1]
+                #Stop the Game
+                carryOn=False
+        if ball.rect.y<42:
+#            flag = 2
+            ball.velocity[1] = -ball.velocity[1]
 
     #Detect collisions between the ball and the paddles
     if pygame.sprite.collide_mask(ball, paddle):
-        
+                
         ball.rect.x -= ball.velocity[0]
         ball.rect.y -= ball.velocity[1]
+        #print("*" * 20)
+        #print("ball : ",ball.rect.x, " " , ball.rect.y)
+        #print(next_x, next_y)
+
         ball.bounce()
         flag = 1
-        #print("initial velocity ", ball.velocity)
-      # predict where the ball's trajectory
-#        next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
-        #print("initial velocity2 ", ball.velocity)
-#        alpha = controller.trivial_inverse_kinematics(next_x, next_y)
 
 
     #Check if there is the ball collides with any of bricks
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
-      ball.bounce()
-      score += 1
-      brick.kill()
-      if len(all_bricks)==0:
-           #Display Level Complete Message for 3 seconds
+        ball.bounce()
+        flag = 2
+        score += 1
+        brick.kill()
+        if len(all_bricks)==0:
+            #Display Level Complete Message for 3 seconds
             font = pygame.font.Font(None, 74)
             text = font.render("LEVEL COMPLETE", 1, WHITE)
             screen.blit(text, (200,300))
             pygame.display.flip()
             pygame.time.wait(3000)
-
             #Stop the Game
             carryOn=False
 
@@ -222,7 +240,7 @@ while carryOn:
     pygame.display.flip()
 
     # --- Limit to 60 frames per second
-    clock.tick(60)
+    clock.tick(90)
 
 #Once we have exited the main program loop we can stop the game engine:
 pygame.quit()

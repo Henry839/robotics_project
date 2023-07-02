@@ -17,46 +17,20 @@ class arm_controller():
         # calculate the angle
         x = x_paddle - self.x_origin
         y = -(y_paddle - self.y_origin)
-#        print(x,y)
         length = sqrt(x**2 + y**2)
         l1 = self.l1
         l2 = self.l2
-#        epsilon = 1e-3
-        psi = (x**2 + y**2 - l1**2 -l2**2)/(2 * l1 * l2)
-        if(psi < -1):
-            psi = -1
-        elif(psi > 1):
-            psi = 1
-        alpha2 = acos(psi)
-        psi2 = (x**2 + y**2 + l1**2 - l2**2)/(2 * sqrt(x**2 + y**2) * l1)
-        if(psi2 < -1):
-            psi2 = -1
-        elif(psi2 > 1):
-            psi2 = 1
-
-        gamma = acos(psi2)
-        
-
-        beta = atan2(y,x)
-        beta = math.degrees(beta)
-        gamma = math.degrees(gamma)
-        
-        alpha1 = beta - gamma
-        alpha1 = math.degrees(alpha1)
-        alpha2 = math.degrees(alpha2)
-        if alpha1 < 0:
-            alpha1 = beta + gamma
-            alpha2 = alpha1 + (-alpha2)
+        epsilon = 1e-3
+        if abs(l1 + l2 - length) < epsilon:
+            f = 0
         else:
-            alpha1 = beta - gamma
-            alpha2 = alpha1 + alpha2
+            f = acos((x**2 + y**2 - l1**2 -l2**2) / 2*l1*l2)
+        f1 = (l1**2 + (x**2 + y**2) - l2**2)/(2*l1*sqrt(x**2 + y**2))
+        alpha1 = [math.degrees(atan2(y,x) - acos(f1)), math.degrees(atan2(y,x) + acos(f1))]
+        alpha2 = [alpha1[0] + math.degrees(f),alpha1[1] + math.degrees(-f)]
+
 
         return alpha1, alpha2
-
-
-
-
-
     def trivial_inverse_kinematics(self, x_paddle, y_paddle):
         length = sqrt(pow(x_paddle - self.x_origin,2) + pow(y_paddle - self.y_origin,2))
         alpha = acos((x_paddle - self.x_origin)/length)

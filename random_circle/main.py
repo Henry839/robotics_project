@@ -99,12 +99,41 @@ while carryOn:
               carryOn = False # Flag that we are done so we exit this loop
 
     #Moving the paddle when the use uses the arrow keys
-    keys = pygame.key.get_pressed()
-    K_LEFT = keys[pygame.K_LEFT]
-    K_RIGHT = keys[pygame.K_RIGHT]
-    K_UP = keys[pygame.K_UP]
-    K_DOWN = keys[pygame.K_DOWN]
+#    if flag == 0:
+        # predict the trajectory from the beginning
 
+    next_x, next_y = predicter.get_destination(ball,all_bricks,all_sprites_list)
+    alpha = controller.trivial_inverse_kinematics(next_x, next_y)
+    time += clock.get_time()
+    if flag == 1:
+        time = 0
+        flag = 0
+
+
+
+
+    
+    if alpha - arm1.angle > delta_angle and time > 160:
+        K_LEFT = True
+        K_RIGHT = False
+
+    elif arm1.angle - alpha > delta_angle and time > 160:
+        K_RIGHT = True
+        K_LEFT = False
+    else:
+        K_RIGHT = False 
+        K_LEFT = False
+
+    if alpha - arm2.angle > delta_angle and time > 160:
+        K_UP = True
+        K_DOWN = False
+
+    elif arm2.angle - alpha > delta_angle and time > 160:
+        K_DOWN = True
+        K_UP = False
+    else:
+        K_DOWN = False 
+        K_UP = False
 
     if K_LEFT:
         arm1.rotate_1(delta_angle)
@@ -191,7 +220,7 @@ while carryOn:
     pygame.display.flip()
 
     # --- Limit to 60 frames per second
-    clock.tick(60)
+    clock.tick(100)
 
 #Once we have exited the main program loop we can stop the game engine:
 pygame.quit()

@@ -240,7 +240,7 @@ while carryOn:
     pygame.display.flip()
 
     # --- Limit to 60 frames per second
-    clock.tick(100)
+    clock.tick(90)
 
 #Once we have exited the main program loop we can stop the game engine:
 pygame.quit()

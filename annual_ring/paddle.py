@@ -33,10 +33,10 @@ class Paddle(pygame.sprite.Sprite):
 
     def rotate_1(self, delta):
         self.angle += delta
-        if self.angle > 180:
-            self.angle = 180
-        if self.angle < 0:
-            self.angle = 0
+#        if self.angle > 180:
+#            self.angle = 180
+#        if self.angle < 0:
+#            self.angle = 0
         
         ori_x, ori_y = self.ini_rect.x, self.ini_rect.y + self.height * 0.5
         angle = self.angle
@@ -61,10 +61,10 @@ class Paddle(pygame.sprite.Sprite):
     def rotate_2(self, delta):
 
         self.angle += delta
-        if self.angle > 180:
-            self.angle = 180
-        if self.angle < 0:
-            self.angle = 0
+   #     if self.angle > 180:
+   #         self.angle = 180
+   #     if self.angle < 0:
+   #         self.angle = 0
         
         a1 = self.parent
         ori_x = a1.ini_rect.x + a1.width * math.cos(math.radians(a1.angle))
