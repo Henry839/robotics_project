@@ -1,9 +1,10 @@
 # robotics_project
 This is our repo for robotics project: atari breakout
-- [Demo](#Demo-demonstration-(四个视频:大概90s能够看完）)
-- [Code running guide](#Code running guide)
+- [Demo](#Demo-demonstration)
+- [Code running guide](#Code-running-guide)
 ---
-# Demo demonstration (四个视频：大概90s能够看完）
+# Demo demonstration 
+**四个视频：大概90s能够看完**
 
 
 ### 圆弧解法
