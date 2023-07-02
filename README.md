@@ -29,4 +29,13 @@ https://github.com/Henry839/robotics_project/assets/78572186/d0144967-32e1-4102-
 https://github.com/Henry839/robotics_project/assets/78572186/ba63daf8-2e38-43f2-b927-0c95e3295c33
 
 # Code running guide
+1. 环境配置
 
+```
+pip install pygame=2.5.0
+```
+2. 代码运行方法
+***不同情形运行方法类似，此处展示随机情形下的年轮解法***
+```python
+python main.py
+```
