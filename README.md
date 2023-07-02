@@ -32,7 +32,7 @@ https://github.com/Henry839/robotics_project/assets/78572186/ba63daf8-2e38-43f2-
 1. 环境配置
 
 ```
-pip install pygame=2.5.0
+pip install pygame==2.5.0
 ```
 2. 代码运行方法
 ***不同情形运行方法类似，此处展示随机情形下的年轮解法***
