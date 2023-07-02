@@ -41,18 +41,24 @@ class place_predicter():
         while(True):
 #            print(f"ball trajectory : {ball.rect.x}, {ball.rect.y}")
 
-
             new_all_sprites_list.update()
             count += 1
-            if ball.rect.x>=790:
+            if ball.rect.x >=785 and ball.rect.y < 42:
                 ball.velocity[0] = -ball.velocity[0]
-            if ball.rect.x<=0:
-                ball.velocity[0] = -ball.velocity[0]
-            if ball.rect.y>790:
-#                ball.velocity[1] = -ball.velocity[1]
-                break
-            if ball.rect.y<42:
                 ball.velocity[1] = -ball.velocity[1]
+            elif ball.rect.x <=5 and ball.rect.y < 42:
+                ball.velocity[0] = -ball.velocity[0]
+                ball.velocity[1] = -ball.velocity[1]
+            else:
+                if ball.rect.x>=785:
+                    ball.velocity[0] = -ball.velocity[0]
+                if ball.rect.x<=5:
+                    ball.velocity[0] = -ball.velocity[0]
+                if ball.rect.y>790:
+                    ball.velocity[1] = -ball.velocity[1]
+                    break
+                if ball.rect.y<42:
+                    ball.velocity[1] = -ball.velocity[1]
 
             #Detect collisions between the ball and the paddles
             #Check if there is the ball collides with any of bricks
@@ -66,33 +72,37 @@ class place_predicter():
             # the ball will reach here, try to hit the ball
 
             ball_origin_length = sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2)
-            if(ball_origin_length <= bound_length and ball.velocity[1] >= 0 and ball_origin_length >= min_length and ball.rect.y <= 800):
+            if(ball_origin_length <= bound_length and ball.velocity[1] >= 0 and ball_origin_length >= min_length and ball.rect.y <= 790):
                 # hit the ball
                 ball0_x = ball.rect.x
                 ball0_y = ball.rect.y
                 ball0_vx = ball.velocity[0]
                 ball0_vy = ball.velocity[1]
                 simulate_dead_brick_list.empty()
+                max_score = 0
 
 
                 
                 ball.bounce()
-                flag = 1
                 score = 0
+                flag = 1
                 while(True):
-                    if(sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) <= self.l1 + self.l2 and ball.velocity[1] > 0 and sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) >= min_length):
+                    #if(sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) <= self.l1 + self.l2 and ball.velocity[1] > 0 and sqrt((ball.rect.x - self.x_origin)**2  + (ball.rect.y - self.y_origin)**2) >= min_length):
+
+                    if(ball.rect.y >= 400  and ball.velocity[1] > 0):
                         break
                     new_all_sprites_list.update()
-                    if ball.rect.x>=790:
+                    if ball.rect.x>=785:
                         ball.velocity[0] = -ball.velocity[0]
-                    if ball.rect.x<=0:
+                    if ball.rect.x<=5:
                         ball.velocity[0] = -ball.velocity[0]
-                    if ball.rect.y>790:
+                    if ball.rect.y>780:
+                        flag = 0
                         ball.velocity[1] = -ball.velocity[1]
-                        flag = 0 # hit the bottom
                         break
-                    if ball.rect.y<40:
+                    if ball.rect.y<42:
                         ball.velocity[1] = -ball.velocity[1]
+
 
                     #Detect collisions between the ball and the paddles
                     #Check if there is the ball collides with any of bricks
@@ -104,11 +114,11 @@ class place_predicter():
                         score += 1
                         brick.kill()
                         simulate_dead_brick_list.add(brick)
-                if(flag == 1):
+                if flag == 1:
                     available_paddle_x.append(ball0_x)
                     available_paddle_y.append(ball0_y)
                     score_list.append(score)
-                #initialize for this hit
+                    #initialize for this hit
                 ball.rect.x = ball0_x
                 ball.rect.y = ball0_y
                 ball.velocity[0] = ball0_vx
@@ -117,7 +127,7 @@ class place_predicter():
                     all_bricks.add(dead_brick)
                     new_all_sprites_list.add(dead_brick)
                     all_sprite_list.add(dead_brick)
-                bound_length -= 0.5
+                bound_length -= 1
                 if(bound_length <= min_length):
                     break
         max_i = score_list.index(max(score_list))

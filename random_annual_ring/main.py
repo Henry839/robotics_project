@@ -90,7 +90,7 @@ time = 0
 flag = 2
 count = 0
 
-delta_angle = 3
+delta_angle = 4
 # -------- Main Program Loop -----------
 out_flag = 0
 while carryOn:
@@ -160,30 +160,36 @@ while carryOn:
 
     
     #Check if the ball is bouncing against any of the 4 walls:
-    if ball.rect.x>=790:
-        flag = 2
+    if ball.rect.x >=785 and ball.rect.y < 42:
         ball.velocity[0] = -ball.velocity[0]
-    if ball.rect.x<=0:
-        flag = 2
+        ball.velocity[1] = -ball.velocity[1]
+    elif ball.rect.x <=5 and ball.rect.y < 42:
         ball.velocity[0] = -ball.velocity[0]
-    if ball.rect.y>790:
-        flag = 2
         ball.velocity[1] = -ball.velocity[1]
-        lives -= 1
-        if lives == 0:
-            #Display Game Over Message for 3 seconds
-            font = pygame.font.Font(None, 74)
-            text = font.render("GAME OVER", 1, WHITE)
-            screen.blit(text, (250,300))
-            pygame.display.flip()
-            pygame.time.wait(3000)
+    else:
+        if ball.rect.x>=785:
+#            flag = 2
+            ball.velocity[0] = -ball.velocity[0]
+        if ball.rect.x<=5:
+#            flag = 2
+            ball.velocity[0] = -ball.velocity[0]
+        if ball.rect.y>790:
+#            flag = 2
+            ball.velocity[1] = -ball.velocity[1]
+            lives -= 1
+            if lives == 0:
+                #Display Game Over Message for 3 seconds
+                font = pygame.font.Font(None, 74)
+                text = font.render("GAME OVER", 1, WHITE)
+                screen.blit(text, (250,300))
+                pygame.display.flip()
+                pygame.time.wait(3000)
 
-            #Stop the Game
-            carryOn=False
-
-    if ball.rect.y<42:
-        flag = 2
-        ball.velocity[1] = -ball.velocity[1]
+                #Stop the Game
+                carryOn=False
+        if ball.rect.y<42:
+#            flag = 2
+            ball.velocity[1] = -ball.velocity[1]
 
     #Detect collisions between the ball and the paddles
     if pygame.sprite.collide_mask(ball, paddle):
@@ -234,7 +240,7 @@ while carryOn:
     pygame.display.flip()
 
     # --- Limit to 60 frames per second
-    clock.tick(60)
+    clock.tick(100)
 
 #Once we have exited the main program loop we can stop the game engine:
 pygame.quit()
